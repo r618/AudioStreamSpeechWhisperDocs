@@ -1,0 +1,139 @@
+﻿::o4.2o23::2022.2.0+
+-------------------------------------------------------------------------------
+
+    Asset is an Unity user friendly interface for - originally - OpenAI's Whisper speech recognition system -
+
+    The easiest way to start is to run demo as mentioned in the '!!! README FIRST', or drop prefab from 
+'AudioStreamSpeechWhisper\Prefabs' into scene.
+
+- please be aware that due to current limitations it's not recommended to run more than one instance of Whisper in a scene at the same time
+- Whisper processing is still taxing on CPU on non Apple Silicon platforms and RAM (RAM depending also on used model)
+- it is optimized to run on Apple Silicon by default, but Windows, Linux and Android binaries are still provided
+- while on non Apple HW the CPU usage is rather high, small models run almost in realtime for quick/short speech
+(see also AudioStreamSpeechWhisper_CommandDemo)
+- large models demand large RAM to be available - see below
+
+In general it's recommended to run either on Apple Silicon, or on desktop/standalone primarily otherwise
+
+-------------------------------------------------------------------------------
+Usage/Scripting:
+-------------------------------------------------------------------------------
+
+    After setting all/needed properties on the component, either set 'Auto Start', or call .StartRecognition() via scripting to run the component,
+standard Unity events are used for all notifications afterwards.
+(component has also 'StartSpeech' public method available, this is just for convenience and they are identical otherwise)
+
+    - Whisper supports transcription, translation to English, and language detection operations and needs a model to run:
+pretrained models are downloaded automatically (currently) from huggingface.co, a custom model can be specified as local file via 'customModelFilepath'
+If the model is not found download is started and download progress is reported via 'modelDownloadProgress'/'modelDownloadBytes'
+Note advanced models can be large, see 'Pretrained models details' below for details.
+
+    - Local cache for downloaded models can be set by 'Download Cache Path' on configuration SO at
+'AudioStreamSpeechWhisper\AudioStreamSpeech\Support\Resources\AudioStreamRuntimeSettings'
+and by default is at Application.persistentDataPath
+
+    - you can use prefab in 'AudioStreamSpeechWhisper\Prefabs'
+
+Limitations:
+
+    - please be advised that once a Whisper operation starts it's generally uncancellable - although C# component can be stopped,
+Whisper will always run on its own separate thread until full completion of the last operation (this includes e.g. exiting Play mode)
+
+    - a single instance in a scene is recommended ( at least with a running operation ) - multiple concurrent Whisper runs are currently not 
+    supported (technically this is due to having static callbacks and might be fixed in the fututre, but due to performance demands it's currently not a priority)
+   
+
+-------------------------------------------------------------------------------
+The AudioStreamSpeechWhisper component:
+-------------------------------------------------------------------------------
+
+Apart from Tooltips provided information on all public fields in the Inspector, some more detailed info for public fields:
+
+Speech source:
+
+- 'speechSource' set to:
+
+    UNITY_MICROPHONE, 'microphoneDeviceId' specifies Id of microphone device to be used for speech recording as reported by Unity Microphone class,
+        i.e. Microphone.devices[microphoneDeviceId] (see also https://docs.unity3d.com/ScriptReference/Microphone-devices.html)
+
+    FILE, 'wavFileName' expects path+complete filename of an audio file accessible on local filesystem (file won't be donwloaded)
+        - path needs only to be resolvable, ie. can be relative - .NET FileInfo is used to access it
+        - only WAV format is supported this way; if the file is not in Whisper supported format - MONO, 16 kHZ - it will be downmixed to MONO (might take some time if it's large - this will be updated in following releases)
+        and resampled to 16 kHZ - same performace limitations applies
+
+Microphone processing:
+
+- 'microphoneProcessingState':
+    alternates between Listening and Processing depending on whether Whisper is currently processing (previously recorded) microphone audio
+
+- 'detectingSilence':
+    at runtime this is ON, if the detected audio/speech is below set threshold
+    (this is public mainly just for visual feedback, it is used internally to process the audio stream)
+
+- 'dBSmooting':
+    important to preserve continuos detection of words within a sentence when speaking
+    - lower values will cut the sence into more words - see also 'singleUtterance' - which is useful to pick up detection quickly for short command words
+    - higher values allow for small pauses within speech while still preserving continuos sentence listening
+    - currently it's requitred to speak without too much pausing between words in order to maintain Listening state
+    - this is just a smooothing filter value on dB detected from the microphone; - while not perfect it's still useful and quick as of now
+
+- 'minimumDbThreshold':
+    - only audio above this dB value(s) will be considered fro listening
+    - you can filter out surrounding noise and speak close, loud and clear to the mic
+
+- 'OnMicrophoneListening'/'OnMicrophoneProcessing':
+    - used in the demo to display state, but also internally to alternate between listening and Whisper processing the speech
+
+------------------
+Whisper operations:
+    
+- 'operation':
+    - just selects requested operation to perform
+    - (default) transcription using set 'language', translation to English (from set 'language'), or detect language
+
+- 'singleUtterance':
+    - when ON causes Whisper to deliver all results in a single callback - useful also for short commands (but not necessary),
+    when OFF the recognized speech can be delivered with multiple callbacks/events
+
+- 'language':
+    this is Whisper specific language code, as defined in original C++ implementation
+        (see also e.g. https://github.com/ggerganov/whispr.cpp/blob/2f889132c66051b14c6f8770e9b3d4e3f159821d/whisper.cpp#L119)
+
+- 'OnWhisperLanguageDetected'/'OnWhisperSegmentDetected':
+    invoked as/when needed by Whisper
+
+
+-------------------------------------------------------------------------------
+Platform specific native libraries:
+-------------------------------------------------------------------------------
+
+- C# interface [https://github.com/r618/whisper.net.unitysubset] is tied to a specific Whisper version and all platform native plugins are included;
+
+Windows and Linux Whisper libraries can be also built or downloaded from [https://github.com/sandrohanea/whisper.net]
+macOS, iOS and Android versions are built directly from [https://github.com/ggerganov/whisper.cpp]
+
+iOS native plugin is built without bitcode - when building Unity Xcode project, please build UnityFramework without bitcode too 
+(Unity Xcode projects still tend to have bitcode ON until it is completely deprecated in Xcode)
+
+-------------------------------------------------------------------------------
+Pretrained models details:
+-------------------------------------------------------------------------------
+
+    The original Whisper PyTorch models provided by OpenAI have are converted to custom ggml format
+for usage by whisper.cpp - for more details see [https://github.com/ggerganov/whisper.cpp/tree/master/models]
+
+If selected (non custom) model is not found on local machine it will be automatically downloaded into local cache (see Usage/Scripting above),
+with endpoints following [https://github.com/ggerganov/whisper.cpp/blob/master/models/download-ggml-model.sh]
+(except SHA is not checked)
+
+See also disk/RAM requirements for each model there 
+- roughly 
+    model   Disk    Mem
+    tiny	75 MB	~390 MB
+    base	142 MB  ~500 MB
+    small	466 MB  ~1.0 GB
+    medium	1.5 GB  ~2.6 GB
+    large	2.9 GB  ~4.7 GB
+
+Large/r models provide better quality and accuracy and might succeed where smaller fail in your specific scenario.
+You can use a custom model if needed - in which case select CUSTOM and provide local filepath to it. The file won't be downloaded in that case.
