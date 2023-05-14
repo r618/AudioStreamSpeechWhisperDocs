@@ -1,4 +1,4 @@
-﻿::o4.2o23::2022.2.0+
+﻿::o54.2o23::2022.2.0+
 -------------------------------------------------------------------------------
 
     Asset is an Unity user friendly interface for - originally - OpenAI's Whisper speech recognition system -
@@ -10,7 +10,7 @@
 - Whisper processing is still taxing on CPU on non Apple Silicon platforms and RAM (RAM depending also on used model)
 - it is optimized to run on Apple Silicon by default, but Windows, Linux and Android binaries are still provided
 - while on non Apple HW the CPU usage is rather high, small models run almost in realtime for quick/short speech
-(see also AudioStreamSpeechWhisper_CommandDemo)
+(see also for example AudioStreamSpeechWhisper_VoiceCommandDemo)
 - large models demand large RAM to be available - see below
 
 In general it's recommended to run either on Apple Silicon, or on desktop/standalone primarily otherwise
