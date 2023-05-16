@@ -66,19 +66,8 @@ Microphone processing:
 - 'microphoneProcessingState':
     alternates between Listening and Processing depending on whether Whisper is currently processing (previously recorded) microphone audio
 
-- 'detectingSilence':
-    at runtime this is ON, if the detected audio/speech is below set threshold
-    (this is public mainly just for visual feedback, it is used internally to process the audio stream)
-
-- 'dBSmooting':
-    important to preserve continuos detection of words within a sentence when speaking
-    - lower values will cut the sence into more words - see also 'singleUtterance' - which is useful to pick up detection quickly for short command words
-    - higher values allow for small pauses within speech while still preserving continuos sentence listening
-    - currently it's requitred to speak without too much pausing between words in order to maintain Listening state
-    - this is just a smooothing filter value on dB detected from the microphone; - while not perfect it's still useful and quick as of now
-
 - 'minimumDbThreshold':
-    - only audio above this dB value(s) will be considered fro listening
+    - only audio above this dB value(s) will be considered for processing
     - you can filter out surrounding noise and speak close, loud and clear to the mic
 
 - 'OnMicrophoneListening'/'OnMicrophoneProcessing':
@@ -91,9 +80,13 @@ Whisper operations:
     - just selects requested operation to perform
     - (default) transcription using set 'language', translation to English (from set 'language'), or detect language
 
-- 'singleUtterance':
-    - when ON causes Whisper to deliver all results in a single callback - useful also for short commands (but not necessary),
+- 'useVAD':
+    - use Voice Activity Detection to process audio, detected parts are submitted for Whisper processing automatically
+    - when ON this also causes Whisper to deliver all results in a single callback - useful also for short commands (but not necessary),
     when OFF the recognized speech can be delivered with multiple callbacks/events
+
+- 'vadSensitivityMs':
+    - sensitivity to pauses/gaps between individual words/utterances, after which the audio is automatically submitted for recognition
 
 - 'language':
     this is Whisper specific language code, as defined in original C++ implementation
