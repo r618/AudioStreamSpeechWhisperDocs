@@ -105,7 +105,7 @@ Platform specific native libraries:
 
 - C# interface [https://github.com/r618/whisper.net.unitysubset] is tied to a specific Whisper version and all platform native plugins are included;
 
-Libraries can be also built or downloaded from [https://github.com/sandrohanea/whisper.net]
+Native Whisper libraries can be also built or downloaded from [https://github.com/sandrohanea/whisper.net], and [https://github.com/drasticactions/Whisper.net.Runtimes],
 or built directly from [https://github.com/ggerganov/whisper.cpp]
 
 iOS native plugin is built without bitcode - when building Unity Xcode project, please build UnityFramework without bitcode too 
