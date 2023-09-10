@@ -2,3 +2,9 @@
 V 1.0 052023 .200k
 Whisper ~1.4.x
 
+===========================================
+V 1.4.7 092023 .250k
+- updated to (current) latest [1.4.7] Whisper.NET changes 
+- opted to follow Whisper.NET versioning no.
+- fixed VAD detection bug for open mic/continuos processing
+- see updated Docs for more about platform/macOS specific libraries 

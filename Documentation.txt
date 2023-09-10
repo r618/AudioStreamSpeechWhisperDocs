@@ -1,4 +1,4 @@
-﻿::o54.2o23::2022.2.0+
+﻿::o9.2o23::2022.2.0+
 -------------------------------------------------------------------------------
 
     Asset is an Unity user friendly interface for - originally - OpenAI's Whisper speech recognition system -
@@ -6,14 +6,15 @@
     The easiest way to start is to run demo as mentioned in the '!!! README FIRST', or drop prefab from 
 'AudioStreamSpeechWhisper\Prefabs' into scene.
 
-- please be aware that due to current limitations it's not recommended to run more than one instance of Whisper in a scene at the same time
-- Whisper processing is still taxing on CPU on non Apple Silicon platforms and RAM (RAM depending also on used model)
+
 - it is optimized to run on Apple Silicon by default, but Windows, Linux and Android binaries are still provided
+(see also 'Platform specific native libraries' below)
 - while on non Apple HW the CPU usage is rather high, small models run almost in realtime for quick/short speech
 (see also for example AudioStreamSpeechWhisper_VoiceCommandDemo)
 - large models demand large RAM to be available - see below
 
-In general it's recommended to run either on Apple Silicon, or on desktop/standalone primarily otherwise
+In general it's recommended to run either on Apple Silicon, or on desktop/standalone
+and having at most one running instance of Whisper in a scene at a time
 
 -------------------------------------------------------------------------------
 Usage/Scripting:
@@ -103,19 +104,29 @@ Whisper operations:
 Platform specific native libraries:
 -------------------------------------------------------------------------------
 
-- C# interface [https://github.com/r618/whisper.net.unitysubset] is tied to a specific Whisper version and all platform native plugins are included;
+- C# interface [https://github.com/r618/whisper.net.unitysubset] is tied to a specific Whisper/Whisper.NET version with platform native plugins included
 
-Native Whisper libraries can be also built or downloaded from [https://github.com/sandrohanea/whisper.net], and [https://github.com/drasticactions/Whisper.net.Runtimes],
-or built directly from [https://github.com/ggerganov/whisper.cpp]
+Native Whisper libraries can be also built or downloaded from [https://github.com/sandrohanea/whisper.net], or built directly from [https://github.com/ggerganov/whisper.cpp]
 
 iOS native plugin is built without bitcode - when building Unity Xcode project, please build UnityFramework without bitcode too 
 (Unity Xcode projects still tend to have bitcode ON until it is completely deprecated in Xcode)
+
+- Apple Silicon library included is built with CoreML support
+    please note that normal (downloaded) models won't suffice though, and there are additional `mlmodelc` models files needed
+    the library will fallback to original core library if `mlmodelc` is not found, for more please see
+    https://github.com/sandrohanea/whisper.net#coreml-runtime
+    [ once `mlmodelc` is created, a custom model local path can be specified on the component which will be used ]
+
+- x64 Windows libraries can be used with GPU support -
+    see https://github.com/sandrohanea/whisper.net#gpu-support-on-windows
+    replace needed library in `Plugins\win\win-x64`
+
 
 -------------------------------------------------------------------------------
 Pretrained models details:
 -------------------------------------------------------------------------------
 
-    The original Whisper PyTorch models provided by OpenAI have are converted to custom ggml format
+    The original Whisper PyTorch models provided by OpenAI are converted to custom ggml format
 for usage by whisper.cpp - for more details see [https://github.com/ggerganov/whisper.cpp/tree/master/models]
 
 If selected (non custom) model is not found on local machine it will be automatically downloaded into local cache (see Usage/Scripting above),
