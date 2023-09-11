@@ -5,8 +5,9 @@ Whisper ~1.4.x
 ===========================================
 V 1.4.7 092023 .250k
 - updated to (current) latest [1.4.7] Whisper.NET changes, also from now on following Whisper.NET versioning no.
-- updated model download error handling
-- added automatic download of CoreML models
+- updated model [HF] downloads & error handling
 - added models QuantizationType
+- updated iOS/macOS native libraries
+- added automatic download of CoreML models
 - fixed VAD detection bug for open mic/continuos processing
 - see updated Docs for more about platform/macOS specific libraries 
