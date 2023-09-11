@@ -6,10 +6,9 @@
     The easiest way to start is to run demo as mentioned in the '!!! README FIRST', or drop prefab from 
 'AudioStreamSpeechWhisper\Prefabs' into scene.
 
-
 - it is optimized to run on Apple Silicon by default, but Windows, Linux and Android binaries are still provided
 (see also 'Platform specific native libraries' below)
-- while on non Apple HW the CPU usage is rather high, small models run almost in realtime for quick/short speech
+- while on non Apple HW the CPU usage can be rather high, although small models run almost in realtime for quick/short speech
 (see also for example AudioStreamSpeechWhisper_VoiceCommandDemo)
 - large models demand large RAM to be available - see below
 
@@ -40,10 +39,8 @@ Limitations:
     - please be advised that once a Whisper operation starts it's generally uncancellable - although C# component can be stopped,
 Whisper will always run on its own separate thread until full completion of the last operation (this includes e.g. exiting Play mode)
 
-    - a single instance in a scene is recommended ( at least with a running operation ) - multiple concurrent Whisper runs are currently not 
-    supported (technically this is due to having static callbacks and might be fixed in the fututre, but due to performance demands it's currently not a priority)
+    - a single instance in a scene is recommended ( at least with a running operation ), though multiple concurrent Whisper runs are supported
    
-
 -------------------------------------------------------------------------------
 The AudioStreamSpeechWhisper component:
 -------------------------------------------------------------------------------
@@ -108,14 +105,14 @@ Platform specific native libraries:
 
 Native Whisper libraries can be also built or downloaded from [https://github.com/sandrohanea/whisper.net], or built directly from [https://github.com/ggerganov/whisper.cpp]
 
-iOS native plugin is built without bitcode - when building Unity Xcode project, please build UnityFramework without bitcode too 
+/ depending on how iOS native plugin is built without bitcode or not, please build UnityFramework accordingly
 (Unity Xcode projects still tend to have bitcode ON until it is completely deprecated in Xcode)
 
-- Apple Silicon library included is built with CoreML support
-    please note that normal (downloaded) models won't suffice though, and there are additional `mlmodelc` models files needed
-    the library will fallback to original core library if `mlmodelc` is not found, for more please see
-    https://github.com/sandrohanea/whisper.net#coreml-runtime
-    [ once `mlmodelc` is created, a custom model local path can be specified on the component which will be used ]
+- Apple Silicon library included is built with CoreML support:
+    on iOS, macOS and tvOS a corresponding CoreML `mlmodelc` archive is also automatically downloaded and extracted and placed next to downloaded model file
+    Whisper's CoreML support will autmoatically use it (if it's not able it will fallback to 'normal' CPU inference)
+    - tvOS
+        native plugin is not included, please get it from [https://github.com/sandrohanea/whisper.net/tree/main/Whisper.net.Runtime]
 
 - x64 Windows libraries can be used with GPU support -
     see https://github.com/sandrohanea/whisper.net#gpu-support-on-windows
