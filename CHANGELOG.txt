@@ -17,4 +17,4 @@ V 1.5 012024 >300k
 - changes from latest [1.5] Whisper.net
 - removed custom model loading/usage (this was not being much used and it simplified interface)
 - whisper native library messages can now be logged to Unity Console
-- on Windows/Linux now it's now possible to use Clblast/Cublas GPU accelerated versions of whisper libs
+- on Windows/Linux it's now possible to use Clblast/Cublas GPU accelerated versions of whisper libs
