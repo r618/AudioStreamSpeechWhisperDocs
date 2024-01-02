@@ -9,10 +9,10 @@
 - it is optimized to run on Apple Silicon by default, but Windows, Linux and Android binaries are still usable and are provided
 (see also 'Platform specific native libraries' below)
 - while on non Apple Silicon HW the CPU usage can be rather high, although small models run almost in realtime for quick/short speech
-(see also for example AudioStreamSpeechWhisper_VoiceCommandDemo)
+(see also for example AudioStreamSpeechWhisper_VoiceCommandDemo), on Windows/Linux it's also possible to use HW optimized Clblast/Cublas runtime/s
 - large models demand large RAM to be available - see below
 
-In general it's recommended to run either on Apple Silicon, or on desktop/standalone
+In general it's recommended to run either on Apple Silicon, or accelerated version/s on desktop/standalone
 and having at most one running instance of Whisper in scene at a time
 
 -------------------------------------------------------------------------------
@@ -24,11 +24,11 @@ standard Unity events are used for all notifications afterwards.
 (component has also 'StartSpeech' public method available, this is just for convenience and they are identical otherwise)
 
     - Whisper supports transcription, translation to English, and language detection operations and needs a model to run:
-pretrained models are downloaded automatically (currently) from huggingface.co, a custom model can be specified as local file via 'customModelFilepath'
-If the model is not found download is started and download progress is reported via 'modelDownloadProgress'/'modelDownloadBytes'
+pretrained models are downloaded automatically (currently) from huggingface.co
+If the model is not found, download is started and download progress is reported via 'modelDownloadProgress'/'modelDownloadBytes'
 Note advanced models can be large, see 'Pretrained models details' below for details.
 
-    - Local cache for downloaded models can be set by 'Download Cache Path' on configuration SO at
+    - Local cache for downloaded models can be set by 'Download Cache Path' on configuration ScriptableObject at
 'AudioStreamSpeechWhisper\AudioStreamSpeech\Support\Resources\AudioStreamRuntimeSettings'
 and by default is at Application.persistentDataPath
 
@@ -101,9 +101,13 @@ Whisper operations:
 Platform specific native libraries:
 -------------------------------------------------------------------------------
 
-- C# interface [https://github.com/r618/whisper.net.unitysubset] is tied to a specific Whisper/Whisper.NET version
+- the asset includes native Whisper libraries for Windows, Linux and Android, macOS and iOS
 
-- native Whisper libraries for Windows, Linux and Android are included from [https://github.com/sandrohanea/whisper.net/tree/main/Whisper.net.Runtime]
+- Windows, Linux and Android runtimes are used from [https://github.com/sandrohanea/whisper.net/tree/main/Whisper.net.Runtime]
+    (only most commonly used platforms, non HW accelerated variants)
+    You can use GPU HW accelerated versions - Clblast/Cublas on Windows/Linux - by replacing respective library in project in `Plugins\win` | `Plugins\linux`
+    GPU support will be used automatically when library is loaded by Unity
+    see also https://github.com/sandrohanea/whisper.net#gpu-support-on-windows
 
 - iOS and macOS native libraries are built directly from whisper.cpp [https://github.com/ggerganov/whisper.cpp] with CoreML support
 / please be aware that iOS lib is built without bitcode, so in order to build Unity Xcode project, please turn off bitcode for UnityFramework
@@ -116,11 +120,10 @@ Platform specific native libraries:
 For other Apple platforms you most likely will need to build from whisper.cpp directly since native libraries currently present at
 [https://github.com/sandrohanea/whisper.net/tree/main/Whisper.net.Runtime] are not suitable for static linking
 
-- x64 Windows libraries can be used with GPU support -
-    see https://github.com/sandrohanea/whisper.net#gpu-support-on-windows
-    replace needed library in `Plugins\win\win-x64`
 
-- similarly for other platforms, except as per above
+- C# interface whisper.net.unitysubset [https://github.com/r618/whisper.net.unitysubset] is tied to a specific released Whisper/Whisper.NET version
+
+Native whisper library log output is also printed to Unity Console (depending on Log Level set on the component; errors are always printed)
 
 
 -------------------------------------------------------------------------------
@@ -130,8 +133,8 @@ Pretrained models details:
     The original Whisper PyTorch models provided by OpenAI are converted to custom ggml format
 for usage by whisper.cpp - for more details see [https://github.com/ggerganov/whisper.cpp/tree/master/models]
 
-If selected (non custom) model is not found on local machine it will be automatically downloaded into local cache (see Usage/Scripting above),
-with endpoints following [https://github.com/ggerganov/whisper.cpp/blob/master/models/download-ggml-model.sh]
+If selected model is not found on local machine it will be automatically downloaded into local cache (see Usage/Scripting above),
+with endpoints following [https://huggingface.co/sandrohanea/whisper.net/]
 (except SHA is not checked)
 
 See also disk/RAM requirements for each model there 
