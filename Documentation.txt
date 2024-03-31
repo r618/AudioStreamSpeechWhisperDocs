@@ -25,7 +25,8 @@ standard Unity events are used for all notifications afterwards.
 
     - Whisper supports transcription, translation to English, and language detection operations and needs a model to run:
 pretrained models are downloaded automatically (currently) from huggingface.co
-If the model is not found, download is started and download progress is reported via 'modelDownloadProgress'/'modelDownloadBytes'
+If model is not found locally its download is started automatically (while in progress, 'modelDownloading' is set)
+
 Note advanced models can be large, see 'Pretrained models details' below for details.
 
     - Local cache for downloaded models can be set by 'Download Cache Path' on configuration ScriptableObject at

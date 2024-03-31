@@ -18,3 +18,8 @@ V 1.5 012024 >300k
 - removed custom model loading/usage (this was not being much used and it simplified interface)
 - whisper native library messages can now be logged to Unity Console
 - on Windows/Linux it's now possible to use Clblast/Cublas GPU accelerated versions of whisper libs
+
+===========================================
+V 1.5.1 042024 >400k
+- replaced UnityWebRequest with HttpClient in order to overcome its max. download size limit
+(LARGE models now work and are downloaded automatically)
