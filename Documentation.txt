@@ -116,7 +116,8 @@ Platform specific native libraries:
 (Unity Xcode projects still tend to have bitcode ON until it is completely deprecated in Xcode)
 
     on iOS and macOS a corresponding CoreML `mlmodelc` archive is also automatically downloaded and extracted and placed next to downloaded model file
-    Whisper's CoreML support will autmoatically use it (if it's not able it will fallback to 'normal' CPU inference)
+    Whisper's CoreML support will autmoatically use it
+    This is indicated also in Console when model is being loaded (if it's not able it will fallback to 'normal' CPU inference)
 
 For other Apple platforms you most likely will need to build from whisper.cpp directly since native libraries currently present at
 [https://github.com/sandrohanea/whisper.net/tree/main/Whisper.net.Runtime] are not suitable for static linking
