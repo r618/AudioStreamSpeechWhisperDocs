@@ -22,4 +22,5 @@ V 1.5 012024 >300k
 ===========================================
 V 1.5.1 042024 >400k
 - replaced UnityWebRequest with HttpClient in order to overcome its max. download size limit
-(LARGE models now work and are downloaded automatically)
+(Large models can be now downloaded automatically)
+- Fixed models re/loading: entering/exiting playmode + editor reloads should now work correctly at all times
