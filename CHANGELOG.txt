@@ -24,3 +24,4 @@ V 1.5.1 042024 >400k
 - replaced UnityWebRequest with HttpClient in order to overcome its max. download size limit
 (Large models can be now downloaded automatically)
 - Fixed models re/loading: entering/exiting playmode + editor reloads should now work correctly at all times
+- macOS / iOS: updated/fixed whisper libraries to use corresponding CoreML model by default
